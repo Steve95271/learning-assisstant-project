@@ -1,6 +1,6 @@
 package com.steve.learning_assisstant.controller;
 
-import com.steve.learning_assisstant.model.respond.Topic;
+import com.steve.learning_assisstant.model.response.TopicLibraryView;
 import com.steve.learning_assisstant.service.TopicLibraryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class TopicsLibraryController {
     }
 
     @GetMapping("/getTopicsByUserId")
-    public ResponseEntity<List<Topic>> getTopicsByUserId(@RequestParam("userId") Long userId) {
+    public ResponseEntity<List<TopicLibraryView>> getTopicsByUserId(@RequestParam("userId") Long userId) {
         log.info("Get user topics by user id: {}", userId);
         return ResponseEntity.ok(topicLibraryService.getTopicsByUserId(userId));
     }

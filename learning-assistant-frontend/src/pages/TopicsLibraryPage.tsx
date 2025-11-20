@@ -16,7 +16,7 @@ const TopicsLibraryPage: React.FC = () => {
       try {
         setIsLoading(true);
         // TODO: Replace with actual userId
-        const userId = 1;
+        const userId = 100;
         const response = await fetch(
           `/api/v1/topicsLibrary/getTopicsByUserId?userId=${userId}`
         );
