@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { toast } from "sonner";
 import PageHeader from "../components/topics-library/PageHeader";
 import TopicsGrid from "../components/topics-library/TopicsGrid";
 import NewTopicModal from "../components/topics-library/NewTopicModal";
@@ -13,6 +14,7 @@ const TopicsLibraryPage: React.FC = () => {
   const [newTopicId, setNewTopicId] = useState<string | null>(null);
   const newTopicRef = useRef<HTMLDivElement>(null);
 
+  // load topics when first load the page
   useEffect(() => {
     fetchTopics();
   }, []);
@@ -76,6 +78,11 @@ const TopicsLibraryPage: React.FC = () => {
       // Close the modal after successful creation
       setIsModalOpen(false);
 
+      // Show success toast
+      toast.success("Topic created successfully!", {
+        description: `"${newTopic.title}" has been added to your library`,
+      });
+
       // Scroll to the new topic after a short delay to ensure rendering
       setTimeout(() => {
         newTopicRef.current?.scrollIntoView({
@@ -84,10 +91,13 @@ const TopicsLibraryPage: React.FC = () => {
         });
         // Clear the newTopicId after scrolling
         setNewTopicId(null);
-      }, 100);
+      }, 500);
     } catch (error) {
-      console.error("Error creating topic:", error);
-      // TODO: Show error message to user (e.g., toast notification)
+      console.error(error);
+      toast.error("Failed to create topic", {
+        description:
+          error instanceof Error ? error.message : "Please try again later",
+      });
     }
   };
 
