@@ -44,7 +44,7 @@ function TopicDetailPageWrapper() {
         setError(null);
 
         const data: TopicDetailVO = await topicDetailService.getTopicDetailById(
-          Number(topicId)
+          topicId
         );
 
         // Transform backend data to frontend types
