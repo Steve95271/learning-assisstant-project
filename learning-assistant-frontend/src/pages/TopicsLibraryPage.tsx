@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 import PageHeader from "../components/topics-library/PageHeader";
 import TopicsGrid from "../components/topics-library/TopicsGrid";
 import NewTopicModal from "../components/topics-library/NewTopicModal";
 import EmptyState from "../components/common/EmptyState";
+import { topicsLibraryService } from "../services/topicsLibraryService";
 import type { TopicCardData, NewTopicFormData } from "../types";
 
 const TopicsLibraryPage: React.FC = () => {
@@ -13,6 +15,7 @@ const TopicsLibraryPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [newTopicId, setNewTopicId] = useState<string | null>(null);
   const newTopicRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   // load topics when first load the page
   useEffect(() => {
@@ -24,21 +27,17 @@ const TopicsLibraryPage: React.FC = () => {
       if (showLoading) {
         setIsLoading(true);
       }
+      setError(null);
+
       // TODO: Replace with actual userId
       const userId = 100;
-      const response = await fetch(
-        `/api/v1/topicsLibrary/getTopicsByUserId?userId=${userId}`
-      );
+      const data = await topicsLibraryService.getTopicsByUserId(userId);
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
       setTopics(data);
-      setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch topics");
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to fetch topics";
+      setError(errorMessage);
       console.error("Error fetching topics:", err);
     } finally {
       if (showLoading) {
@@ -48,26 +47,16 @@ const TopicsLibraryPage: React.FC = () => {
   };
 
   const handleTopicClick = (topic: TopicCardData) => {
-    // TODO implement handle topic click logic
+    navigate(`/topic/${topic.id}`);
     console.log(topic.title, "topic card clicked");
   };
 
   const handleCreateTopic = async (data: NewTopicFormData) => {
     try {
-      const response = await fetch("/api/v1/topicsLibrary/createTopic", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
       // Backend now returns the created TopicLibraryView
-      const newTopic: TopicCardData = await response.json();
+      const newTopic: TopicCardData = await topicsLibraryService.createTopic(
+        data
+      );
 
       // Add the new topic to the end of the list
       setTopics((prevTopics) => [...prevTopics, newTopic]);
@@ -93,7 +82,7 @@ const TopicsLibraryPage: React.FC = () => {
         setNewTopicId(null);
       }, 500);
     } catch (error) {
-      console.error(error);
+      console.error("Error creating topic:", error);
       toast.error("Failed to create topic", {
         description:
           error instanceof Error ? error.message : "Please try again later",
