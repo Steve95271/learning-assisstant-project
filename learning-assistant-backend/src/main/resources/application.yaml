@@ -1,6 +1,6 @@
 spring:
   application:
-    name: learning-assisstant
+    name: learning-assistant
   profiles:
     active: local
   datasource:

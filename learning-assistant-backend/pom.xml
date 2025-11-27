@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.steve</groupId>
-	<artifactId>learning-assisstant</artifactId>
+	<artifactId>learning-assistant</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>learning-assisstant</name>
-	<description>An AI learning assisstant application</description>
+	<name>learning-assistant</name>
+	<description>An AI learning assistant application</description>
 	<url/>
 	<licenses>
 		<license/>
