@@ -18,4 +18,11 @@ export const topicDetailService = {
   ): Promise<TopicDetailVO> => {
     return api.patch<TopicDetailVO>(`/topicDetail/${topicId}`, data);
   },
+
+  /**
+   * Delete topic by topic ID (soft delete)
+   */
+  deleteTopic: async (topicId: string): Promise<void> => {
+    return api.delete<void>(`/topicDetail/${topicId}`);
+  },
 };

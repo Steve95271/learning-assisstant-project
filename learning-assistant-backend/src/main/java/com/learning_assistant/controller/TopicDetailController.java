@@ -32,4 +32,11 @@ public class TopicDetailController {
         return ResponseEntity.ok(topicDetailService.updateTopic(topicId, updateDTO));
     }
 
+    @DeleteMapping("/{topicId}")
+    public ResponseEntity<Void> deleteTopic(@PathVariable Long topicId) {
+        log.info("Delete topic id: {}", topicId);
+        topicDetailService.deleteTopic(topicId);
+        return ResponseEntity.noContent().build();
+    }
+
 }

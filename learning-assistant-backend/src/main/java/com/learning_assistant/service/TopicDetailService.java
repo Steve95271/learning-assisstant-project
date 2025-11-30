@@ -24,4 +24,12 @@ public interface TopicDetailService {
      */
     TopicDetailVO updateTopic(Long topicId, UpdateTopicDTO updateDTO);
 
+    /**
+     * Soft deletes a topic by setting its deleted_at timestamp and status to 'deleted'.
+     *
+     * @param topicId the unique identifier of the topic to be deleted
+     * @throws com.learning_assistant.exception.ResourceNotFoundException if the topic is not found
+     */
+    void deleteTopic(Long topicId);
+
 }

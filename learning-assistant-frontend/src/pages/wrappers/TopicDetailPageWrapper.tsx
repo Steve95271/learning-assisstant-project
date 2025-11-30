@@ -77,9 +77,26 @@ function TopicDetailPageWrapper() {
     setIsEditModalOpen(true);
   };
 
-  const handleDelete = () => {
-    console.log("Delete topic");
-    toast.info("Delete feature coming soon");
+  const handleDelete = async () => {
+    if (!topicId) return;
+
+    // Confirm deletion with user
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${topic?.title}"? This action cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await topicDetailService.deleteTopic(topicId);
+      toast.success("Topic deleted successfully!");
+      navigate("/");
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to delete topic";
+      toast.error(errorMessage);
+      console.error("Error deleting topic:", err);
+    }
   };
 
   const handleEditSubmit = async (data: UpdateTopicFormData) => {

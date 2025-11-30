@@ -34,6 +34,12 @@ async function fetchJSON<T>(url: string, options?: RequestInit): Promise<T> {
       throw new ApiError(response.status, response.statusText);
     }
 
+    // Check if response has content before parsing JSON
+    // 204 No Content responses have no body
+    if (response.status === 204 || response.headers.get('content-length') === '0') {
+      return undefined as T;
+    }
+
     return await response.json();
   } catch (error) {
     if (error instanceof ApiError) {

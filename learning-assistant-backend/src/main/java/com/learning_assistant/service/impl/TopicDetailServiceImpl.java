@@ -108,4 +108,32 @@ public class TopicDetailServiceImpl implements TopicDetailService {
         return getTopicDetailById(topicId);
     }
 
+    /**
+     * Soft deletes a topic by setting its deleted_at timestamp and status to 'deleted'.
+     * This method performs a soft delete operation in a write transaction.
+     *
+     * @param topicId the unique identifier of the topic to be deleted
+     * @throws ResourceNotFoundException if the topic is not found
+     */
+    @Override
+    @Transactional
+    public void deleteTopic(Long topicId) {
+        // Fetch existing topic
+        Topic topic = topicRepository.findById(topicId)
+                .orElseThrow(() -> new ResourceNotFoundException("Topic", topicId));
+
+        // Set soft delete timestamp
+        topic.setDeletedAt(LocalDateTime.now(ZoneId.of(ZoneOffset.UTC.getId())));
+
+        // Mark as deleted status
+        topic.setStatus(Topic.TopicStatus.deleted);
+
+        // Update timestamp
+        topic.setUpdatedAt(LocalDateTime.now(ZoneId.of(ZoneOffset.UTC.getId())));
+
+        // Save
+        topic.setIsNew(false);
+        topicRepository.save(topic);
+    }
+
 }
