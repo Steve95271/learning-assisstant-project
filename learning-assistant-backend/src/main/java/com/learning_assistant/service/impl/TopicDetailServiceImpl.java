@@ -1,6 +1,7 @@
 package com.learning_assistant.service.impl;
 
 import com.learning_assistant.exception.ResourceNotFoundException;
+import com.learning_assistant.model.dto.UpdateTopicDTO;
 import com.learning_assistant.model.entity.Conversation;
 import com.learning_assistant.model.entity.SummaryNote;
 import com.learning_assistant.model.entity.Topic;
@@ -10,13 +11,15 @@ import com.learning_assistant.repository.ConversationRepository;
 import com.learning_assistant.repository.SummaryNoteRepository;
 import com.learning_assistant.repository.TopicFileRepository;
 import com.learning_assistant.repository.TopicRepository;
-import com.learning_assistant.repository.*;
 import com.learning_assistant.service.TopicDetailService;
 import com.learning_assistant.service.converter.TopicDetailVOConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -68,6 +71,41 @@ public class TopicDetailServiceImpl implements TopicDetailService {
                 .summaryNotePreview(topicDetailVOConverter.toSummaryNotePreview(summaryNote))
                 .fileInfoPreviews(topicDetailVOConverter.toFileInfoPreviews(files))
                 .build();
+    }
+
+    /**
+     * Updates a topic's name and description.
+     * This method performs an update operation in a write transaction.
+     *
+     * @param topicId the unique identifier of the topic to be updated
+     * @param updateDTO the DTO containing the updated name and description
+     * @return TopicDetailVO containing the updated topic details
+     * @throws ResourceNotFoundException if the topic is not found
+     */
+    @Override
+    @Transactional
+    public TopicDetailVO updateTopic(Long topicId, UpdateTopicDTO updateDTO) {
+        // Fetch existing topic
+        Topic topic = topicRepository.findById(topicId)
+                .orElseThrow(() -> new ResourceNotFoundException("Topic", topicId));
+
+        // Update fields
+        if (updateDTO.getName() != null && !updateDTO.getName().isBlank()) {
+            topic.setName(updateDTO.getName());
+        }
+        if (updateDTO.getDescription() != null) {
+            topic.setDescription(updateDTO.getDescription());
+        }
+
+        // Update timestamp
+        topic.setUpdatedAt(LocalDateTime.now(ZoneId.of(ZoneOffset.UTC.getId())));
+
+        // Save (without markNew() - will perform UPDATE)
+        topic.setIsNew(false);
+        topicRepository.save(topic);
+
+        // Return updated topic detail view
+        return getTopicDetailById(topicId);
     }
 
 }
