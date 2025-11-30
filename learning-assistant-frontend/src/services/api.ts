@@ -5,13 +5,18 @@
 const API_BASE_URL = "/api/v1";
 
 class ApiError extends Error {
+  public status: number;
+  public statusText: string;
+
   constructor(
-    public status: number,
-    public statusText: string,
+    status: number,
+    statusText: string,
     message?: string
   ) {
     super(message || `API Error: ${status} ${statusText}`);
     this.name = "ApiError";
+    this.status = status;
+    this.statusText = statusText;
   }
 }
 
@@ -55,6 +60,12 @@ export const api = {
     fetchJSON<T>(url, {
       ...options,
       method: "PUT",
+      body: JSON.stringify(data),
+    }),
+  patch: <T>(url: string, data?: unknown, options?: RequestInit) =>
+    fetchJSON<T>(url, {
+      ...options,
+      method: "PATCH",
       body: JSON.stringify(data),
     }),
   delete: <T>(url: string, options?: RequestInit) =>
